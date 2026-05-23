@@ -1,17 +1,133 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+namespace Jugadores
+{
+    public interface Jugador
+    {
+        bool Correr(int minutos);
+        bool Cansado();
+        void Descansar(int minutos);
+    }
+    public class Amateur : Jugador
+    {
+        public int minutosCorridos;
+        public const int LimiteCansancio = 20;
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Ejercicio_3</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
-  </PropertyGroup>
+        public Amateur()
+        {
+            minutosCorridos = 0;
+        }
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
-  </ItemGroup>
+        public bool Correr(int minutos)
+        {
+            if (Cansado())
+            {
+                return false;
+            }
 
-</Project>
+            if (minutosCorridos + minutos <= LimiteCansancio)
+            {
+                minutosCorridos += minutos;
+                return true;
+            }
+            else
+            {
+                minutosCorridos = LimiteCansancio;
+                return false;
+            }
+        }
+
+        public bool Cansado()
+        {
+            return minutosCorridos >= LimiteCansancio;
+        }
+
+        public void Descansar(int minutos)
+        {
+            minutosCorridos -= minutos;
+
+            if (minutosCorridos < 0)
+            {
+                minutosCorridos = 0;
+            }
+        }
+    }
+    public class Profesional : Jugador
+    {
+        public int minutosCorridos;
+        public const int LimiteCansancio = 40;
+
+        public Profesional()
+        {
+            minutosCorridos = 0;
+        }
+
+        public bool Correr(int minutos)
+        {
+            if (Cansado())
+            {
+                return false;
+            }
+
+            if (minutosCorridos + minutos <= LimiteCansancio)
+            {
+                minutosCorridos += minutos;
+                return true;
+            }
+            else
+            {
+                minutosCorridos = LimiteCansancio;
+                return false;
+            }
+        }
+
+        public bool Cansado()
+        {
+            return minutosCorridos >= LimiteCansancio;
+        }
+
+        public void Descansar(int minutos)
+        {
+            minutosCorridos -= minutos;
+
+            if (minutosCorridos < 0)
+            {
+                minutosCorridos = 0;
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("JUGADOR AMATEUR");
+            Jugador amateur = new Amateur();
+
+            Console.WriteLine($"Pudo correr 15 min? {amateur.Correr(15)}"); 
+            Console.WriteLine($"Está cansado? {amateur.Cansado()}");        
+
+            Console.WriteLine($"Pudo correr 10 min? {amateur.Correr(10)}"); 
+            Console.WriteLine($"Está cansado? {amateur.Cansado()}");       
+
+            Console.WriteLine($"Pudo correr 5 min? {amateur.Correr(5)}");  
+
+            amateur.Descansar(10);
+            Console.WriteLine($"Está cansado? {amateur.Cansado()}");        
+
+            Console.WriteLine($"Pudo correr 8 min? {amateur.Correr(8)}");   
+
+            Console.WriteLine("\nJUGADOR PROFESIONAL");
+            Jugador profesional = new Profesional();
+
+            Console.WriteLine($"¿Pudo correr 30 min? {profesional.Correr(30)}"); 
+            Console.WriteLine($"¿Está cansado? {profesional.Cansado()}");         
+
+            Console.WriteLine($"¿Pudo correr 15 min? {profesional.Correr(15)}");  
+            Console.WriteLine($"¿Está cansado? {profesional.Cansado()}");       
+
+            profesional.Descansar(50);
+            Console.WriteLine($"¿Está cansado? {profesional.Cansado()}");     
+
+            Console.ReadKey();
+        }
+    }
+}

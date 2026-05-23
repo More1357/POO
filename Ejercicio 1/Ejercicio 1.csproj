@@ -1,11 +1,118 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+namespace Ejercicio_1
+{
+    public class Semaforo
+    {
+        public const string Rojo = "Rojo";
+        public const string Amarillo = "Amarillo";
+        public const string Verde = "Verde";
+        public const string RojoAmarillo = "Rojo + Amarillo";
+        public const string Apagado = "Apagado";
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Ejercicio_1</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+        public const int EstadoRojo = 0;
+        public const int EstadoRojoAmarillo = 1;
+        public const int EstadoVerde = 2;
+        public const int EstadoAmarillo = 3;
 
-</Project>
+        public int estadoActual;
+        public int segundosTranscurridos;
+        public bool modoIntermitente;
+        public bool intermitenteEncendido;
+        public int segundosIntermitente;
+
+        public Semaforo(string colorInicial)
+        {
+            modoIntermitente = false;
+            intermitenteEncendido = true;
+            segundosIntermitente = 0;
+            segundosTranscurridos = 0;
+
+            estadoActual = colorInicial.ToLower() switch
+            {
+                "rojo" => EstadoRojo,
+                "rojo + amarillo" => EstadoRojoAmarillo,
+                "verde" => EstadoVerde,
+                "amarillo" => EstadoAmarillo,
+                _ => EstadoRojo 
+            };
+        }
+
+        public void PasoDelTiempo(int segundos)
+        {
+            if (modoIntermitente)
+            {
+                segundosIntermitente += segundos;
+                int ciclos = segundosIntermitente % 2;
+                if (ciclos == 0)
+                    intermitenteEncendido = true;
+                else
+                    intermitenteEncendido = false;
+            }
+            else
+            {
+                for (int i = 0; i < segundos; i++)
+                {
+                    AvanzarUnSegundo();
+                }
+            }
+        }
+
+        public void AvanzarUnSegundo()
+        {
+            segundosTranscurridos++;
+            int duracionActual = DuracionEstadoActual();
+
+            if (segundosTranscurridos >= duracionActual)
+            {
+                segundosTranscurridos = 0;
+
+                estadoActual = estadoActual + 1;
+                if (estadoActual > 3)
+                    estadoActual = 0;
+            }
+        }
+
+        public int DuracionEstadoActual()
+        {
+            return estadoActual switch
+            {
+                EstadoRojo => 30,
+                EstadoRojoAmarillo => 2,
+                EstadoVerde => 20,
+                EstadoAmarillo => 2,
+                _ => 30
+            };
+        }
+
+        public string MostrarColor()
+        {
+            if (modoIntermitente)
+            {
+                if (intermitenteEncendido)
+                    return "Amarillo";
+                else
+                    return "Apagado";
+            }
+
+            return estadoActual switch
+            {
+                EstadoRojo => Rojo,
+                EstadoRojoAmarillo => RojoAmarillo,
+                EstadoVerde => Verde,
+                EstadoAmarillo => Amarillo,
+                _ => Rojo
+            };
+        }
+
+        public void PonerEnIntermitente()
+        {
+            modoIntermitente = true;
+            intermitenteEncendido = true;
+            segundosIntermitente = 0;
+        }
+
+        public void SacarDeIntermitente()
+        {
+            modoIntermitente = false;
+            segundosIntermitente = 0;
+        }
+    }

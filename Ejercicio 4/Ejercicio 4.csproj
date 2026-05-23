@@ -1,17 +1,185 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+using System;
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Ejercicio_4</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
-  </PropertyGroup>
+namespace VehiculosApp
+{
+    public interface Vehiculo
+    {
+        void Mover(int tiempo);
+        double Posicion();
+        void ReiniciarPosicion();
+    }
+    public class Bicicleta : Vehiculo
+    {
+        public double posicion;
+        public const double Velocidad = 10.0; 
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
-  </ItemGroup>
+        public Bicicleta()
+        {
+            posicion = 0;
+        }
 
-</Project>
+        public void Mover(int tiempo)
+        {
+            posicion += Velocidad * tiempo;
+        }
+
+        public double Posicion()
+        {
+            return posicion;
+        }
+
+        public void ReiniciarPosicion()
+        {
+            posicion = 0;
+        }
+    }
+
+    public class Camion : Vehiculo
+    {
+        public double posicion;
+        public const double Velocidad = 30.0; 
+
+        public Camion()
+        {
+            posicion = 0;
+        }
+
+        public void Mover(int tiempo)
+        {
+            posicion += Velocidad * tiempo;
+        }
+
+        public double Posicion()
+        {
+            return posicion;
+        }
+
+        public void ReiniciarPosicion()
+        {
+            posicion = 0;
+        }
+    }
+    public class Auto : Vehiculo
+    {
+        public double posicion;
+        public double velocidad; 
+
+        public Auto(double velocidad = 40.0)
+        {
+            posicion = 0;
+            this.velocidad = velocidad;
+        }
+
+        public void Mover(int tiempo)
+        {
+            posicion += velocidad * tiempo;
+        }
+
+        public double Posicion()
+        {
+            return posicion;
+        }
+
+        public void ReiniciarPosicion()
+        {
+            posicion = 0;
+        }
+    }
+    public class Carrera
+    {
+        public Vehiculo vehiculo1;
+        public Vehiculo vehiculo2;
+        public int duracionSegundos;
+
+        public Carrera(Vehiculo v1, Vehiculo v2, int segundos)
+        {
+            vehiculo1 = v1;
+            vehiculo2 = v2;
+            duracionSegundos = segundos;
+        }
+
+        public void Iniciar()
+        {
+            Console.WriteLine("=== INICIA LA CARRERA ===");
+            Console.WriteLine($"Duración: {duracionSegundos} segundos\n");
+
+            vehiculo1.ReiniciarPosicion();
+            vehiculo2.ReiniciarPosicion();
+
+            vehiculo1.Mover(duracionSegundos);
+            vehiculo2.Mover(duracionSegundos);
+
+            double posicionV1 = vehiculo1.Posicion();
+            double posicionV2 = vehiculo2.Posicion();
+
+            Console.WriteLine($"Vehículo 1: {posicionV1} metros");
+            Console.WriteLine($"Vehículo 2: {posicionV2} metros\n");
+
+            if (posicionV1 > posicionV2)
+            {
+                Console.WriteLine("¡El Vehículo 1 llegó más lejos!");
+            }
+            else if (posicionV2 > posicionV1)
+            {
+                Console.WriteLine("¡El Vehículo 2 llegó más lejos!");
+            }
+            else
+            {
+                Console.WriteLine("¡Empate! Ambos vehículos recorrieron la misma distancia");
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("PRUEBA DE VEHÍCULOS\n");
+
+            Auto fiat = new Auto(45);
+            Bicicleta bici = new Bicicleta();
+            Camion camion = new Camion();
+
+            bici.Mover(20);
+            Console.WriteLine($"Bicicleta después de 20s: {bici.Posicion()} metros");
+
+            bici.Mover(10);
+            Console.WriteLine($"Bicicleta después de +10s: {bici.Posicion()} metros\n");
+
+            Console.WriteLine("PRUEBAS ADICIONALES\n");
+
+            Console.WriteLine("Moviendo todos los vehículos 5 segundos:");
+            fiat.ReiniciarPosicion();
+            bici.ReiniciarPosicion();
+            camion.ReiniciarPosicion();
+
+            fiat.Mover(5);
+            bici.Mover(5);
+            camion.Mover(5);
+
+            Console.WriteLine($"Fiat (45 m/s): {fiat.Posicion()} metros");
+            Console.WriteLine($"Bicicleta (10 m/s): {bici.Posicion()} metros");
+            Console.WriteLine($"Camión (30 m/s): {camion.Posicion()} metros\n");
+
+            Console.WriteLine("CARRERA 1: Auto vs Camión (10 segundos)\n");
+            Auto autoCarrera = new Auto(45);
+            Camion camionCarrera = new Camion();
+            Carrera carrera1 = new Carrera(autoCarrera, camionCarrera, 10);
+            carrera1.Iniciar();
+
+            Console.WriteLine("\nCARRERA 2: Bicicleta vs Auto (15 segundos)\n");
+            Bicicleta biciCarrera = new Bicicleta();
+            Auto autoCarrera2 = new Auto(40);
+            Carrera carrera2 = new Carrera(biciCarrera, autoCarrera2, 15);
+            carrera2.Iniciar();
+
+            Console.WriteLine("\nCARRERA 3: Auto lento vs Auto rápido (20 segundos)\n");
+            Auto autoLento = new Auto(25);
+            Auto autoRapido = new Auto(50);
+            Carrera carrera3 = new Carrera(autoLento, autoRapido, 20);
+            carrera3.Iniciar();
+
+            Console.ReadKey();
+        }
+    }
+}
